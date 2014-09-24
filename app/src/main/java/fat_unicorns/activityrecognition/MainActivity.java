@@ -31,8 +31,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         if(resp == ConnectionResult.SUCCESS){
             arclient = new ActivityRecognitionClient(this, this, this);
             arclient.connect();
-
-
         }
         else{
             Toast.makeText(this, "Please install Google Play Service.", Toast.LENGTH_SHORT).show();
@@ -41,16 +39,15 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String v =  "You are currently " + intent.getStringExtra("Activity") + " (" + intent.getExtras().getInt("Confidence") + "% conf.)" + System.lineSeparator();
+                String v =  "You are currently " + intent.getStringExtra("Activity") + " (" + intent.getExtras().getInt("Confidence") + "% conf.)\n";
                 v += tvActivity.getText();
                 tvActivity.setText(v);
             }
         };
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction("com.kpbird.myactivityrecognition.ACTIVITY_RECOGNITION_DATA");
+        filter.addAction("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
         registerReceiver(receiver, filter);
-
     }
 
 

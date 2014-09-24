@@ -19,7 +19,7 @@ public class ActivityRecognitionService extends IntentService  {
         if(ActivityRecognitionResult.hasResult(intent)){
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
             Log.i(TAG, getType(result.getMostProbableActivity().getType()) +"t" + result.getMostProbableActivity().getConfidence());
-            Intent i = new Intent("com.kpbird.myactivityrecognition.ACTIVITY_RECOGNITION_DATA");
+            Intent i = new Intent("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
             i.putExtra("Activity", getType(result.getMostProbableActivity().getType()) );
             i.putExtra("Confidence", result.getMostProbableActivity().getConfidence());
             sendBroadcast(i);
