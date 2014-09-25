@@ -26,7 +26,6 @@ package fat_unicorns.activityrecognition;
         import java.io.File;
         import java.io.FileOutputStream;
         import java.io.IOException;
-        import java.io.OutputStreamWriter;
         import java.io.PrintWriter;
         import java.util.ArrayList;
 
@@ -78,7 +77,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             @Override
             public void onItemClick(AdapterView<?> parent,final View view,
                                     final int position, long id) {
-                view.animate().setDuration(2000).alpha(0).scaleY(0).scaleX(0).rotationX(90)
+                view.animate().setDuration(500).alpha(0).scaleY(0).scaleX(0).rotationX(90)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
@@ -90,7 +89,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                                     entry_cnt.setText("Entries: " + activity_history_list.size());
                                 } catch (IndexOutOfBoundsException e) {
                                     Toast.makeText(getApplicationContext(), "Entry Already Removed!", Toast.LENGTH_SHORT).show();
-
                                 }
 
                             }

@@ -3,6 +3,8 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,6 +54,9 @@ public class ActivityHistoryAdapter extends BaseAdapter {
         title.setText(data.get(position).getName());
         description.setText(data.get(position).getTimestamp() + " - " + data.get(position).getConfidence() + "% confidence");
         icon.setImageResource(typeToImageID(data.get(position).getType()));
+
+        //Animation animation = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.abc_slide_in_bottom);
+        //rowView.startAnimation(animation);
 
         return rowView;
     }
