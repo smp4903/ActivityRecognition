@@ -1,11 +1,14 @@
 package fat_unicorns.activityrecognition;
         import android.app.Activity;
+        import android.app.ListActivity;
         import android.app.PendingIntent;
         import android.content.BroadcastReceiver;
         import android.content.Context;
         import android.content.Intent;
         import android.content.IntentFilter;
         import android.os.Bundle;
+        import android.view.View;
+        import android.widget.ListView;
         import android.widget.TextView;
         import android.widget.Toast;
 
@@ -14,18 +17,18 @@ package fat_unicorns.activityrecognition;
         import com.google.android.gms.common.GooglePlayServicesUtil;
         import com.google.android.gms.location.ActivityRecognitionClient;
 
-public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener {
+public class MainActivity extends ListActivity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private ActivityRecognitionClient arclient;
     private PendingIntent pIntent;
     private BroadcastReceiver receiver;
-    private TextView tvActivity;
+    private ListView activity_history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvActivity = (TextView) findViewById(R.id.tvActivity);
+        activity_history = (ListView) findViewById(R.id.activity_history);
 
         int resp =GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if(resp == ConnectionResult.SUCCESS){
@@ -40,8 +43,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             @Override
             public void onReceive(Context context, Intent intent) {
                 String v =  "You are currently " + intent.getStringExtra("Activity") + " (" + intent.getExtras().getInt("Confidence") + "% conf.)\n";
-                v += tvActivity.getText();
-                tvActivity.setText(v);
+
             }
         };
 
@@ -73,6 +75,11 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     }
     @Override
     public void onDisconnected() {
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        // Do something when a list item is clicked
     }
 
 
