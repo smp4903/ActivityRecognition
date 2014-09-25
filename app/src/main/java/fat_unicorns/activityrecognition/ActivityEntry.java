@@ -29,7 +29,7 @@ public class ActivityEntry {
     }
 
     public String toString(){
-        return timestamp + "\n" + name + " (" + confidence + "%)";
+        return timestamp + " - " + name + " (" + confidence + "%)";
     }
 
     public String getTimestamp(){
