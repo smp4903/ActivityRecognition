@@ -22,6 +22,7 @@ public class ActivityRecognitionService extends IntentService  {
             Intent i = new Intent("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
             i.putExtra("Activity", getType(result.getMostProbableActivity().getType()) );
             i.putExtra("Confidence", result.getMostProbableActivity().getConfidence());
+            i.putExtra("Type", result.getMostProbableActivity().getType());
             sendBroadcast(i);
         }
     }

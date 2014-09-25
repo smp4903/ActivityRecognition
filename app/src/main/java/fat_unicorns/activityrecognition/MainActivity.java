@@ -8,8 +8,10 @@ package fat_unicorns.activityrecognition;
         import android.content.IntentFilter;
         import android.os.Bundle;
         import android.view.View;
+        import android.widget.AdapterView;
+        import android.widget.ArrayAdapter;
         import android.widget.ListView;
-        import android.widget.TextView;
+        import android.widget.SimpleCursorAdapter;
         import android.widget.Toast;
 
         import com.google.android.gms.common.ConnectionResult;
@@ -17,20 +19,42 @@ package fat_unicorns.activityrecognition;
         import com.google.android.gms.common.GooglePlayServicesUtil;
         import com.google.android.gms.location.ActivityRecognitionClient;
 
-public class MainActivity extends ListActivity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener, LoaderManager.LoaderCallbacks<Cursor> {
+        import java.util.ArrayList;
+
+
+public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener{
 
     private ActivityRecognitionClient arclient;
     private PendingIntent pIntent;
     private BroadcastReceiver receiver;
     private ListView activity_history;
+    private ArrayList<ActivityEntry> activity_history_list;
+    private ActivityHistoryAdapter ah_adapter;
+
+    // This is the Adapter being used to display the list's data
+    SimpleCursorAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        activity_history = (ListView) findViewById(R.id.activity_history);
 
-        int resp =GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        activity_history_list = new ArrayList<ActivityEntry>();
+        activity_history = (ListView) findViewById(R.id.activity_history);
+        ah_adapter = new ActivityHistoryAdapter(this, activity_history_list);
+        activity_history.setAdapter(ah_adapter);
+        activity_history.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Toast.makeText(getApplicationContext(),
+                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+
+
+        int resp = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if(resp == ConnectionResult.SUCCESS){
             arclient = new ActivityRecognitionClient(this, this, this);
             arclient.connect();
@@ -42,8 +66,8 @@ public class MainActivity extends ListActivity implements GooglePlayServicesClie
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String v =  "You are currently " + intent.getStringExtra("Activity") + " (" + intent.getExtras().getInt("Confidence") + "% conf.)\n";
-
+                activity_history_list.add(new ActivityEntry(intent.getStringExtra("Activity"), intent.getExtras().getInt("Confidence"), intent.getIntExtra("Type",0)));
+                ah_adapter.notifyDataSetChanged();
             }
         };
 
@@ -76,12 +100,5 @@ public class MainActivity extends ListActivity implements GooglePlayServicesClie
     @Override
     public void onDisconnected() {
     }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        // Do something when a list item is clicked
-    }
-
-
 }
 
