@@ -7,11 +7,15 @@ package fat_unicorns.activityrecognition;
         import android.content.Intent;
         import android.content.IntentFilter;
         import android.os.Bundle;
+        import android.os.Environment;
+        import android.util.Log;
         import android.view.View;
         import android.widget.AdapterView;
         import android.widget.ArrayAdapter;
+        import android.widget.Button;
         import android.widget.ListView;
         import android.widget.SimpleCursorAdapter;
+        import android.widget.TextView;
         import android.widget.Toast;
 
         import com.google.android.gms.common.ConnectionResult;
@@ -19,17 +23,27 @@ package fat_unicorns.activityrecognition;
         import com.google.android.gms.common.GooglePlayServicesUtil;
         import com.google.android.gms.location.ActivityRecognitionClient;
 
+        import java.io.File;
+        import java.io.IOException;
+        import java.io.OutputStreamWriter;
         import java.util.ArrayList;
 
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener{
 
+    private static final String FILENAME = "ActivityRecognitionTrace.txt";
     private ActivityRecognitionClient arclient;
     private PendingIntent pIntent;
     private BroadcastReceiver receiver;
     private ListView activity_history;
     private ArrayList<ActivityEntry> activity_history_list;
     private ActivityHistoryAdapter ah_adapter;
+
+    // save button
+    Button save_btn;
+
+    // entry counter
+    TextView entry_cnt;
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -38,6 +52,19 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize save button
+        save_btn = (Button) findViewById(R.id.save_button);
+        save_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeToFile(activity_history_list);
+                Toast.makeText(getApplicationContext(), "Saved to File.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Initialize entry counter
+        entry_cnt = (TextView) findViewById(R.id.entry_counter);
 
         checkServices();
 
@@ -54,12 +81,13 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                try{
+                                try {
                                     activity_history_list.remove(activity_history_list.get(position));
                                     ah_adapter.notifyDataSetChanged();
                                     view.setAlpha(1);
                                     Toast.makeText(getApplicationContext(), "Removed Activity Entry", Toast.LENGTH_SHORT).show();
-                                } catch(IndexOutOfBoundsException e){
+                                    entry_cnt.setText("Entries: " + activity_history_list.size());
+                                } catch (IndexOutOfBoundsException e) {
                                     Toast.makeText(getApplicationContext(), "Entry Already Removed!", Toast.LENGTH_SHORT).show();
 
                                 }
@@ -74,6 +102,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             public void onReceive(Context context, Intent intent) {
                 activity_history_list.add(new ActivityEntry(intent.getStringExtra("Activity"), intent.getExtras().getInt("Confidence"), intent.getIntExtra("Type",0), intent.getLongExtra("Timestamp",0)));
                 ah_adapter.notifyDataSetChanged();
+                entry_cnt.setText("Entries: " + activity_history_list.size());
             }
         };
 
@@ -116,6 +145,31 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     }
     @Override
     public void onDisconnected() {
+
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void writeToFile(ArrayList<ActivityEntry> data) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(FILENAME, Context.MODE_PRIVATE));
+            String result = "";
+            for(ActivityEntry ae : data){
+                result += ae.toString() + "\n";
+            }
+            outputStreamWriter.write(result);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            //Log.e(TAG, "File write failed: " + e.toString());
+        }
 
     }
 }
