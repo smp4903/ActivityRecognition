@@ -50,7 +50,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             @Override
             public void onItemClick(AdapterView<?> parent,final View view,
                                     final int position, long id) {
-                Toast.makeText(getApplicationContext(), "Removing Activity Entry Number " + position, Toast.LENGTH_LONG).show();
                 view.animate().setDuration(2000).alpha(0).scaleY(0)
                         .withEndAction(new Runnable() {
                             @Override
@@ -58,6 +57,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                                 activity_history_list.remove(activity_history_list.get(position));
                                 ah_adapter.notifyDataSetChanged();
                                 view.setAlpha(1);
+                                Toast.makeText(getApplicationContext(), "Removed Activity Entry", Toast.LENGTH_LONG).show();
+
                             }
                         });
             }
