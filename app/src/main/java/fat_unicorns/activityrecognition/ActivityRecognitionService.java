@@ -18,11 +18,12 @@ public class ActivityRecognitionService extends IntentService  {
     protected void onHandleIntent(Intent intent) {
         if(ActivityRecognitionResult.hasResult(intent)){
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-            Log.i(TAG, getType(result.getMostProbableActivity().getType()) +"t" + result.getMostProbableActivity().getConfidence());
+            Log.i(TAG, getType(result.getMostProbableActivity().getType()) +" " + result.getMostProbableActivity().getConfidence());
             Intent i = new Intent("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
             i.putExtra("Activity", getType(result.getMostProbableActivity().getType()) );
             i.putExtra("Confidence", result.getMostProbableActivity().getConfidence());
             i.putExtra("Type", result.getMostProbableActivity().getType());
+            i.putExtra("Timestamp", result.getTime());
             sendBroadcast(i);
         }
     }
