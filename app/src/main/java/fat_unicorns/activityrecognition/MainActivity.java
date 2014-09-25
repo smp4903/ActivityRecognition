@@ -50,14 +50,19 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             @Override
             public void onItemClick(AdapterView<?> parent,final View view,
                                     final int position, long id) {
-                view.animate().setDuration(2000).alpha(0).scaleY(0)
+                view.animate().setDuration(2000).alpha(0).scaleY(0).scaleX(0).rotationX(90)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                activity_history_list.remove(activity_history_list.get(position));
-                                ah_adapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                                Toast.makeText(getApplicationContext(), "Removed Activity Entry", Toast.LENGTH_LONG).show();
+                                try{
+                                    activity_history_list.remove(activity_history_list.get(position));
+                                    ah_adapter.notifyDataSetChanged();
+                                    view.setAlpha(1);
+                                    Toast.makeText(getApplicationContext(), "Removed Activity Entry", Toast.LENGTH_SHORT).show();
+                                } catch(IndexOutOfBoundsException e){
+                                    Toast.makeText(getApplicationContext(), "Entry Already Removed!", Toast.LENGTH_SHORT).show();
+
+                                }
 
                             }
                         });
@@ -106,10 +111,12 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     public void onConnected(Bundle arg0) {
         Intent intent = new Intent(this, ActivityRecognitionService.class);
         pIntent = PendingIntent.getService(this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        arclient.requestActivityUpdates(1000, pIntent);
+
+        arclient.requestActivityUpdates(0, pIntent);
     }
     @Override
     public void onDisconnected() {
+
     }
 }
 
