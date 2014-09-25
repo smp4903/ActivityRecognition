@@ -16,11 +16,14 @@ public class ActivityEntry {
     private double confidence;
     private String timestamp;
     private int type;
+    private Date date;
 
-    public ActivityEntry(String n, double conf, int t){
+    public ActivityEntry(String n, double conf, int t, long ts){
         name = n;
         confidence = conf;
         type = t;
+        date = new Date(ts);
+
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
         timestamp = df.format(Calendar.getInstance().getTime());
     }
@@ -42,4 +45,6 @@ public class ActivityEntry {
     }
 
     public int getType(){ return type;}
+
+    public Date getDate(){ return date;}
 }
