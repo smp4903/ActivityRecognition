@@ -7,7 +7,7 @@ package fat_unicorns.activityrecognition;
         import android.content.Intent;
         import android.util.Log;
 
-public class ActivityRecognitionService extends IntentService  {
+    public class ActivityRecognitionService extends IntentService  {
 
     private String TAG = this.getClass().getSimpleName();
     public ActivityRecognitionService() {

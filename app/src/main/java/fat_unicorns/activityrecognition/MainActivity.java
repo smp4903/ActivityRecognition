@@ -96,6 +96,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             }
         });
 
+        // Register broadcast reciever to recieve broadcasts from the ActivityRecognitionService.
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -104,7 +105,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                 entry_cnt.setText("Entries: " + activity_history_list.size());
             }
         };
-
         IntentFilter filter = new IntentFilter();
         filter.addAction("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
         registerReceiver(receiver, filter);
