@@ -23,6 +23,7 @@ package fat_unicorns.activityrecognition;
             i.putExtra("Activity", getType(result.getMostProbableActivity().getType()) );
             i.putExtra("Confidence", result.getMostProbableActivity().getConfidence());
             i.putExtra("Type", result.getMostProbableActivity().getType());
+            i.putExtra("Elapsed", result.getElapsedRealtimeMillis());
             i.putExtra("Timestamp", result.getTime());
             sendBroadcast(i);
         }

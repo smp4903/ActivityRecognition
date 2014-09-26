@@ -27,7 +27,9 @@ package fat_unicorns.activityrecognition;
         import java.io.FileOutputStream;
         import java.io.IOException;
         import java.io.PrintWriter;
+        import java.text.SimpleDateFormat;
         import java.util.ArrayList;
+        import java.util.Date;
 
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener{
@@ -39,6 +41,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     private ListView activity_history;
     private ArrayList<ActivityEntry> activity_history_list;
     private ActivityHistoryAdapter ah_adapter;
+    private long last_time = 0;
+    private ArrayList<Long> elapsed_time_list = new ArrayList<Long>();
 
     // save button
     Button save_btn;
@@ -100,8 +104,26 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                activity_history_list.add(new ActivityEntry(intent.getStringExtra("Activity"), intent.getExtras().getInt("Confidence"), intent.getIntExtra("Type",0), intent.getLongExtra("Timestamp",0)));
+                // Here we do something with the result
+                // Add activity to history (list)
+
+                long time_elapsed_long = intent.getLongExtra("Elapsed",0) - last_time;
+                last_time = intent.getLongExtra("Elapsed", 0);
+                elapsed_time_list.add(time_elapsed_long);
+                String time_elapsed = new SimpleDateFormat("mm-ss-SSS").format(new Date(time_elapsed_long).getTime()).toString();
+
+
+                activity_history_list.add(new ActivityEntry(
+                                intent.getStringExtra("Activity"),
+                                intent.getExtras().getInt("Confidence"),
+                                intent.getIntExtra("Type",0),
+                                intent.getLongExtra("Timestamp",0),
+                                time_elapsed)
+                );
+
+                // Tell adapter that the data has changed to update the View
                 ah_adapter.notifyDataSetChanged();
+                // Update textview to show how many entries have been collected
                 entry_cnt.setText("Entries: " + activity_history_list.size());
             }
         };

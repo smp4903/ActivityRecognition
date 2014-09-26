@@ -17,12 +17,14 @@ public class ActivityEntry {
     private String timestamp;
     private int type;
     private Date date;
+    private String elapsed;
 
-    public ActivityEntry(String n, double conf, int t, long ts){
+    public ActivityEntry(String n, double conf, int t, long ts, String e){
         name = n;
         confidence = conf;
         type = t;
         date = new Date(ts);
+        elapsed = e;
 
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
         timestamp = df.format(Calendar.getInstance().getTime());
@@ -47,4 +49,6 @@ public class ActivityEntry {
     public int getType(){ return type;}
 
     public Date getDate(){ return date;}
+
+    public String getElapsedTime() {return elapsed;}
 }
