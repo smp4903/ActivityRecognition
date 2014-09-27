@@ -29,8 +29,18 @@
         android:text="Entries: 0"
         android:id="@+id/entry_counter"
         android:layout_alignParentTop="true"
+        android:gravity="center"
         android:layout_toEndOf="@+id/save_button"
         android:layout_alignBottom="@+id/save_button"
+        android:layout_toStartOf="@+id/map_btn" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Map"
+        android:id="@+id/map_btn"
+        android:layout_alignBottom="@+id/entry_counter"
         android:layout_alignEnd="@+id/activity_history" />
 
 

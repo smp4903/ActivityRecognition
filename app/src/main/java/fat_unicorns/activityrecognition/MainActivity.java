@@ -37,6 +37,7 @@ package fat_unicorns.activityrecognition;
         import java.text.SimpleDateFormat;
         import java.util.ArrayList;
         import java.util.Date;
+        import java.util.Random;
 
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener{
@@ -62,6 +63,9 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     // entry counter
     TextView entry_cnt;
 
+    // map button
+    Button map_btn;
+
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
 
@@ -84,6 +88,24 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
         checkServices();
 
+        // Get button object
+        map_btn = (Button) findViewById(R.id.map_btn);
+        map_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent map_intent = new Intent(getApplicationContext(), MapsActivity.class);
+
+                // Convert list of Activity Entries to list of AE-strings -- parsed on the other side
+                ArrayList<String> tmp = new ArrayList<String>();
+                for (ActivityEntry ae : activity_history_list){
+                    tmp.add(ae.toString());
+                }
+
+                map_intent.putStringArrayListExtra("Entries", tmp);
+                startActivity(map_intent);
+
+            }
+        });
         // Initialize activity recognition
         activity_history_list = new ArrayList<ActivityEntry>();
         activity_history = (ListView) findViewById(R.id.activity_history);
@@ -114,7 +136,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                             }
                         });
     */
-                Toast.makeText(getApplicationContext(), activity_history_list.get(position).getCurrentPos().latitude + ", " + activity_history_list.get(position).getCurrentPos().longitude, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), activity_history_list.get(position).getCurrentPos(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -135,10 +157,9 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                 ActivityEntry ae = new ActivityEntry(
                         intent.getStringExtra("Activity"),
                         intent.getExtras().getInt("Confidence"),
-                        intent.getIntExtra("Type",0),
-                        intent.getLongExtra("Timestamp",0),
+                        intent.getIntExtra("Type", 0),
                         time_elapsed,
-                        currentPos);
+                        currentPos.latitude + "," + currentPos.longitude);
                 activity_history_list.add(ae);
 
                 Log.i("LOG", ae.toString());
@@ -218,7 +239,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         LocationListener mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                //Log.i("LOCATIONING", "Received a new location " + location);
+                Log.i("LOCATIONING", "Received a new location " + location + " acc: " + location.getAccuracy());
                 currentPos = new LatLng(location.getLatitude(),location.getLongitude());
 
             }
@@ -251,7 +272,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
             String result = "";
             for(ActivityEntry ae : data){
-                pw.println(ae.toString());
+                pw.print(ae.toString() + "\r\n");
             }
             pw.close();
             f.close();

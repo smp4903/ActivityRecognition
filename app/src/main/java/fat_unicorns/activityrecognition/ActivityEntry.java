@@ -1,7 +1,11 @@
 package fat_unicorns.activityrecognition;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.security.Timestamp;
 import java.sql.Time;
 import java.text.DateFormat;
@@ -12,21 +16,19 @@ import java.util.Date;
 /**
  * Created by Stefan on 25-09-2014.
  */
-public class ActivityEntry {
+public class ActivityEntry{
 
     private String name;
-    private double confidence;
+    private int confidence;
     private String timestamp;
     private int type;
-    private Date date;
     private String elapsed;
-    private LatLng currentPos;
+    private String currentPos;
 
-    public ActivityEntry(String n, double conf, int t, long ts, String e, LatLng pos){
+    public ActivityEntry(String n, int conf, int t, String e, String pos){
         name = n;
         confidence = conf;
         type = t;
-        date = new Date(ts);
         elapsed = e;
         currentPos = pos;
 
@@ -35,7 +37,7 @@ public class ActivityEntry {
     }
 
     public String toString(){
-        return timestamp + ";" + name + ";" + confidence + ";" + elapsed + ";" + currentPos.latitude + "," + currentPos.longitude;
+        return timestamp + ";" + name + ";" + confidence + ";" + elapsed + ";" + currentPos;
     }
 
     public String getTimestamp(){
@@ -46,15 +48,15 @@ public class ActivityEntry {
         return name;
     }
 
-    public double getConfidence(){
+    public int getConfidence(){
         return confidence;
     }
 
     public int getType(){ return type;}
 
-    public Date getDate(){ return date;}
-
     public String getElapsedTime() {return elapsed;}
 
-    public LatLng getCurrentPos() {return currentPos;}
+    public String getCurrentPos() {return currentPos;}
+
+
 }
