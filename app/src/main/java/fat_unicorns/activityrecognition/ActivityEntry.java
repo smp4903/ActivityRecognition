@@ -1,5 +1,7 @@
 package fat_unicorns.activityrecognition;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.security.Timestamp;
 import java.sql.Time;
 import java.text.DateFormat;
@@ -18,13 +20,15 @@ public class ActivityEntry {
     private int type;
     private Date date;
     private String elapsed;
+    private LatLng currentPos;
 
-    public ActivityEntry(String n, double conf, int t, long ts, String e){
+    public ActivityEntry(String n, double conf, int t, long ts, String e, LatLng pos){
         name = n;
         confidence = conf;
         type = t;
         date = new Date(ts);
         elapsed = e;
+        currentPos = pos;
 
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
         timestamp = df.format(Calendar.getInstance().getTime());
@@ -51,4 +55,6 @@ public class ActivityEntry {
     public Date getDate(){ return date;}
 
     public String getElapsedTime() {return elapsed;}
+
+    public LatLng getCurrentPos() {return currentPos;}
 }
