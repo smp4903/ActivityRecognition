@@ -6,6 +6,7 @@ package fat_unicorns.activityrecognition;
         import android.content.Context;
         import android.content.Intent;
         import android.content.IntentFilter;
+        import android.location.Location;
         import android.os.Bundle;
         import android.os.Environment;
         import android.util.Log;
@@ -22,6 +23,12 @@ package fat_unicorns.activityrecognition;
         import com.google.android.gms.common.GooglePlayServicesClient;
         import com.google.android.gms.common.GooglePlayServicesUtil;
         import com.google.android.gms.location.ActivityRecognitionClient;
+        import com.google.android.gms.location.LocationClient;
+        import com.google.android.gms.location.LocationListener;
+        import com.google.android.gms.location.LocationRequest;
+        import com.google.android.gms.maps.CameraUpdateFactory;
+        import com.google.android.gms.maps.model.CameraPosition;
+        import com.google.android.gms.maps.model.LatLng;
 
         import java.io.File;
         import java.io.FileOutputStream;
@@ -43,6 +50,11 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     private ActivityHistoryAdapter ah_adapter;
     private long last_time = 0;
     private ArrayList<Long> elapsed_time_list = new ArrayList<Long>();
+    private LatLng currentPos = new LatLng(0,0);
+
+    // Location Client
+    private LocationClient mLocationClient;
+    private LocationRequest mLocationRequest;
 
     // save button
     Button save_btn;
@@ -81,22 +93,29 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             @Override
             public void onItemClick(AdapterView<?> parent,final View view,
                                     final int position, long id) {
+                /*
                 view.animate().setDuration(500).alpha(0).scaleY(0).scaleX(0).rotationX(90)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
                                 try {
+
                                     activity_history_list.remove(activity_history_list.get(position));
                                     ah_adapter.notifyDataSetChanged();
                                     view.setAlpha(1);
                                     Toast.makeText(getApplicationContext(), "Removed Activity Entry", Toast.LENGTH_SHORT).show();
                                     entry_cnt.setText("Entries: " + activity_history_list.size());
+
+
                                 } catch (IndexOutOfBoundsException e) {
                                     Toast.makeText(getApplicationContext(), "Entry Already Removed!", Toast.LENGTH_SHORT).show();
                                 }
 
                             }
                         });
+    */
+                Toast.makeText(getApplicationContext(), "Location: " + activity_history_list.get(position).getCurrentPos().toString(), Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -118,7 +137,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                                 intent.getExtras().getInt("Confidence"),
                                 intent.getIntExtra("Type",0),
                                 intent.getLongExtra("Timestamp",0),
-                                time_elapsed)
+                                time_elapsed,
+                                currentPos)
                 );
 
                 // Tell adapter that the data has changed to update the View
@@ -143,6 +163,32 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         }
     }
 
+    private void startLocationTracking() {
+        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
+            mLocationClient = new LocationClient(this,this,this);
+            mLocationClient.connect();
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        startLocationTracking();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startLocationTracking();
+    }
+
+    @Override
+    protected void onStop() {
+        // Disconnecting the client invalidates it.
+        mLocationClient.disconnect();
+        super.onStop();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -161,8 +207,21 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     public void onConnected(Bundle arg0) {
         Intent intent = new Intent(this, ActivityRecognitionService.class);
         pIntent = PendingIntent.getService(this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        if(arclient.isConnected()) arclient.requestActivityUpdates(0, pIntent);
 
-        arclient.requestActivityUpdates(0, pIntent);
+        // Locationing
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(100).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationListener mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i("LOCATIONING", "Received a new location " + location);
+                currentPos = new LatLng(location.getLatitude(),location.getLongitude());
+
+            }
+        };
+        if(mLocationClient.isConnected()) mLocationClient.requestLocationUpdates(locationRequest,mLocationListener);
     }
     @Override
     public void onDisconnected() {
