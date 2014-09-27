@@ -18,7 +18,7 @@ package fat_unicorns.activityrecognition;
     protected void onHandleIntent(Intent intent) {
         if(ActivityRecognitionResult.hasResult(intent)){
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-            Log.i(TAG, getType(result.getMostProbableActivity().getType()) +" " + result.getMostProbableActivity().getConfidence());
+            //Log.i(TAG, getType(result.getMostProbableActivity().getType()) +" " + result.getMostProbableActivity().getConfidence());
             Intent i = new Intent("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
             i.putExtra("Activity", getType(result.getMostProbableActivity().getType()) );
             i.putExtra("Confidence", result.getMostProbableActivity().getConfidence());

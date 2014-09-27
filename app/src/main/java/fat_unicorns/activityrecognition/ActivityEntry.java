@@ -35,7 +35,7 @@ public class ActivityEntry {
     }
 
     public String toString(){
-        return timestamp + " - " + name + " (" + confidence + "%)";
+        return timestamp + ";" + name + ";" + confidence + ";" + elapsed + ";" + currentPos.latitude + "," + currentPos.longitude;
     }
 
     public String getTimestamp(){

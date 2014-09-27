@@ -114,7 +114,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                             }
                         });
     */
-                Toast.makeText(getApplicationContext(), "Location: " + activity_history_list.get(position).getCurrentPos().toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), activity_history_list.get(position).getCurrentPos().latitude + ", " + activity_history_list.get(position).getCurrentPos().longitude, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -132,14 +132,16 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
                 String time_elapsed = new SimpleDateFormat("mm-ss-SSS").format(new Date(time_elapsed_long).getTime()).toString();
 
 
-                activity_history_list.add(new ActivityEntry(
-                                intent.getStringExtra("Activity"),
-                                intent.getExtras().getInt("Confidence"),
-                                intent.getIntExtra("Type",0),
-                                intent.getLongExtra("Timestamp",0),
-                                time_elapsed,
-                                currentPos)
-                );
+                ActivityEntry ae = new ActivityEntry(
+                        intent.getStringExtra("Activity"),
+                        intent.getExtras().getInt("Confidence"),
+                        intent.getIntExtra("Type",0),
+                        intent.getLongExtra("Timestamp",0),
+                        time_elapsed,
+                        currentPos);
+                activity_history_list.add(ae);
+
+                Log.i("LOG", ae.toString());
 
                 // Tell adapter that the data has changed to update the View
                 ah_adapter.notifyDataSetChanged();
@@ -216,7 +218,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         LocationListener mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.i("LOCATIONING", "Received a new location " + location);
+                //Log.i("LOCATIONING", "Received a new location " + location);
                 currentPos = new LatLng(location.getLatitude(),location.getLongitude());
 
             }
