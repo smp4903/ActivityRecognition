@@ -1,6 +1,5 @@
 package fat_unicorns.activityrecognition;
         import android.app.Activity;
-        import android.app.ListActivity;
         import android.app.PendingIntent;
         import android.content.BroadcastReceiver;
         import android.content.Context;
@@ -12,7 +11,6 @@ package fat_unicorns.activityrecognition;
         import android.util.Log;
         import android.view.View;
         import android.widget.AdapterView;
-        import android.widget.ArrayAdapter;
         import android.widget.Button;
         import android.widget.ListView;
         import android.widget.SimpleCursorAdapter;
@@ -26,8 +24,6 @@ package fat_unicorns.activityrecognition;
         import com.google.android.gms.location.LocationClient;
         import com.google.android.gms.location.LocationListener;
         import com.google.android.gms.location.LocationRequest;
-        import com.google.android.gms.maps.CameraUpdateFactory;
-        import com.google.android.gms.maps.model.CameraPosition;
         import com.google.android.gms.maps.model.LatLng;
 
         import java.io.File;
@@ -37,7 +33,6 @@ package fat_unicorns.activityrecognition;
         import java.text.SimpleDateFormat;
         import java.util.ArrayList;
         import java.util.Date;
-        import java.util.Random;
 
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener{
@@ -79,14 +74,15 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeToFile(activity_history_list);
+                LogHelper lh = new LogHelper(getApplicationContext());
+                lh.writeToFile(activity_history_list, "ARTrace.txt");
             }
         });
 
         // Initialize entry counter
         entry_cnt = (TextView) findViewById(R.id.entry_counter);
 
-        checkServices();
+        connectAR();
 
         // Get button object
         map_btn = (Button) findViewById(R.id.map_btn);
@@ -115,6 +111,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             @Override
             public void onItemClick(AdapterView<?> parent,final View view,
                                     final int position, long id) {
+
+
                 /*
                 view.animate().setDuration(500).alpha(0).scaleY(0).scaleX(0).rotationX(90)
                         .withEndAction(new Runnable() {
@@ -156,7 +154,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
                 ActivityEntry ae = new ActivityEntry(
                         intent.getStringExtra("Activity"),
-                        intent.getExtras().getInt("Confidence"),
+                        intent.getIntExtra("Confidence",0),
                         intent.getIntExtra("Type", 0),
                         time_elapsed,
                         currentPos.latitude + "," + currentPos.longitude);
@@ -175,7 +173,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         registerReceiver(receiver, filter);
     }
 
-    private void checkServices(){
+    private void connectAR(){
+        // check for Google Play Services
         int resp = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if(resp == ConnectionResult.SUCCESS){
             arclient = new ActivityRecognitionClient(this, this, this);
@@ -226,6 +225,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     public void onConnectionFailed(ConnectionResult arg0) {
         Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
     }
+
     @Override
     public void onConnected(Bundle arg0) {
         Intent intent = new Intent(this, ActivityRecognitionService.class);
@@ -248,39 +248,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     }
     @Override
     public void onDisconnected() {
-
-    }
-
-    /* Checks if external storage is available for read and write */
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    private void writeToFile(ArrayList<ActivityEntry> data) {
-        File root = android.os.Environment.getExternalStorageDirectory();
-        File dir = new File (root.getAbsolutePath() + "/download");
-        dir.mkdirs();
-        File file = new File(dir, FILENAME);
-
-        try {
-            FileOutputStream f = new FileOutputStream(file);
-            PrintWriter pw = new PrintWriter(f);
-
-            String result = "";
-            for(ActivityEntry ae : data){
-                pw.print(ae.toString() + "\r\n");
-            }
-            pw.close();
-            f.close();
-        }
-        catch (IOException e) {
-            //Log.e(TAG, "File write failed: " + e.toString());
-        }
-        Toast.makeText(this, "Trace written to file "+file, Toast.LENGTH_SHORT).show();
 
     }
 }
