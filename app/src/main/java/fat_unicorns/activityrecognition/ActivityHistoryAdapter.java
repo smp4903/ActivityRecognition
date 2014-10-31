@@ -62,46 +62,11 @@ public class ActivityHistoryAdapter extends BaseAdapter {
 
         title.setText(data.get(position).getName() + " (" + time_elements[0] + "m " + time_elements[1] + "s " + time_elements[2] + "ms since last)" );
         description.setText(data.get(position).getTimestamp() + " - " + data.get(position).getConfidence() + "% confidence");
-        icon.setImageResource(typeToImageID(data.get(position).getType()));
+        icon.setImageResource(ActivityHelper.typeToImageID(data.get(position).getType()));
 
         //Animation animation = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.abc_slide_in_bottom);
         //rowView.startAnimation(animation);
 
         return rowView;
     }
-
-    private int typeToImageID(int type){
-        if(type == DetectedActivity.UNKNOWN)
-            return R.drawable.unknown;
-        else if(type == DetectedActivity.IN_VEHICLE)
-            return R.drawable.in_vehicle;
-        else if(type == DetectedActivity.ON_BICYCLE)
-            return R.drawable.on_bycicle;
-        else if(type == DetectedActivity.ON_FOOT)
-            return R.drawable.on_foot;
-        else if(type == DetectedActivity.STILL)
-            return R.drawable.still;
-        else if(type == DetectedActivity.TILTING)
-            return R.drawable.tilting;
-        else
-            return R.drawable.unknown;
-    }
-
-    private String getType(int type){
-        if(type == DetectedActivity.UNKNOWN)
-            return "Unknown";
-        else if(type == DetectedActivity.IN_VEHICLE)
-            return "In Vehicle";
-        else if(type == DetectedActivity.ON_BICYCLE)
-            return "On Bicycle";
-        else if(type == DetectedActivity.ON_FOOT)
-            return "On Foot";
-        else if(type == DetectedActivity.STILL)
-            return "Still";
-        else if(type == DetectedActivity.TILTING)
-            return "Tilting";
-        else
-            return "";
-    }
-
 }

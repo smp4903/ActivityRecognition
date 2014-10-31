@@ -48,12 +48,9 @@ public class MapsActivity extends FragmentActivity {
             for (String s : tmp){
                 String[] parts = s.split(";");
 
-                ActivityEntry ae = new ActivityEntry(parts[1], Integer.parseInt(parts[2]), getTypeFromName(parts[1]), parts[3], parts[4]);
+                ActivityEntry ae = new ActivityEntry(parts[1], Integer.parseInt(parts[2]), ActivityHelper.typeStringToInt(parts[1]), parts[3], parts[4]);
                 activity_history_list.add(ae);
                 Log.e("ADDING", "Added element to history");
-
-
-
             }
         } else {
             Log.e("PARSING", "Extras == null");
@@ -97,46 +94,11 @@ public class MapsActivity extends FragmentActivity {
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             for(ActivityEntry ae : activity_history_list){
-                mMarkers.add(mMap.addMarker(new MarkerOptions().position(pos).title(getType(ae.getType())).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_dot)).snippet(ae.getTimestamp() + "\n" + ae.getConfidence() + "% confidence")));
+                mMarkers.add(mMap.addMarker(new MarkerOptions().position(pos).title(ActivityHelper.typeIntToString(ae.getType())).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_dot)).snippet(ae.getTimestamp() + "\n" + ae.getConfidence() + "% confidence")));
 
                 Log.e("MARKERS", "Set marker");
             }
         }
 
     }
-
-    private String getType(int type){
-        if(type == DetectedActivity.UNKNOWN)
-            return "Unknown";
-        else if(type == DetectedActivity.IN_VEHICLE)
-            return "In Vehicle";
-        else if(type == DetectedActivity.ON_BICYCLE)
-            return "On Bicycle";
-        else if(type == DetectedActivity.ON_FOOT)
-            return "On Foot";
-        else if(type == DetectedActivity.STILL)
-            return "Still";
-        else if(type == DetectedActivity.TILTING)
-            return "Tilting";
-        else
-            return "";
-    }
-
-    private int getTypeFromName(String name){
-        if(name ==  "Unknown" )
-            return DetectedActivity.UNKNOWN;
-        else if(name == "In Vehicle")
-            return DetectedActivity.IN_VEHICLE;
-        else if(name == "On Bicycle")
-            return DetectedActivity.ON_BICYCLE;
-        else if(name == "On Foot")
-            return DetectedActivity.ON_FOOT;
-        else if(name == "Still")
-            return DetectedActivity.STILL;
-        else if(name == "Tilting")
-            return DetectedActivity.TILTING;
-        else
-            return DetectedActivity.UNKNOWN;
-    }
-
 }

@@ -21,7 +21,7 @@ public class ActivityRecognitionService extends IntentService {
 
             // Put information into new intent
             Intent i = new Intent("fat_unicorns.ACTIVITY_RECOGNITION_DATA");
-            i.putExtra("Activity", getType(result.getMostProbableActivity().getType()));
+            i.putExtra("Activity", ActivityHelper.typeIntToString(result.getMostProbableActivity().getType()));
             i.putExtra("Confidence", result.getMostProbableActivity().getConfidence());
             i.putExtra("Type", result.getMostProbableActivity().getType());
             i.putExtra("Elapsed", result.getElapsedRealtimeMillis());
@@ -30,23 +30,6 @@ public class ActivityRecognitionService extends IntentService {
             // Broadcast intent
             sendBroadcast(i);
         }
-    }
-
-    private String getType(int type) {
-        if (type == DetectedActivity.UNKNOWN)
-            return "Unknown";
-        else if (type == DetectedActivity.IN_VEHICLE)
-            return "In Vehicle";
-        else if (type == DetectedActivity.ON_BICYCLE)
-            return "On Bicycle";
-        else if (type == DetectedActivity.ON_FOOT)
-            return "On Foot";
-        else if (type == DetectedActivity.STILL)
-            return "Still";
-        else if (type == DetectedActivity.TILTING)
-            return "Tilting";
-        else
-            return "";
     }
 
 }
